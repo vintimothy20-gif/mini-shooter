@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Shooter</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 15px;
+    }
+
+    #game {
+      width: 95%;
+      max-width: 500px;
+      height: 600px;
+      margin: auto;
+      background: #222;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid white;
+    }
+
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 45%;
+      font-size: 40px;
+    }
+
+    .enemy {
+      position: absolute;
+      font-size: 35px;
+    }
+
+    .bullet {
+      position: absolute;
+      width: 6px;
+      height: 15px;
+      background: yellow;
+    }
+
+    button {
+      margin: 8px;
+      padding: 15px 25px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🚀 MINI SHOOTER</h1>
+
+<p>Score: <span id="score">0</span></p>
+
+<div id="game">
+  <div id="player">🚀</div>
+</div>
+
+<button onclick="moveLeft()">⬅️</button>
+<button onclick="shoot()">🔥 SHOOT</button>
+<button onclick="moveRight()">➡️</button>
+
+<script>
+let player = document.getElementById("player");
+let game = document.getElementById("game");
+let score = 0;
+let playerX = 45;
+
+function moveLeft() {
+  playerX -= 5;
+  if (playerX < 0) playerX = 0;
+  player.style.left = playerX + "%";
+}
+
+function moveRight() {
+  playerX += 5;
+  if (playerX > 90) playerX = 90;
+  player.style.left = playerX + "%";
+}
+
+function shoot() {
+  let bullet = document.createElement("div");
+  bullet.className = "bullet";
+
+  bullet.style.left = (player.offsetLeft + 18) + "px";
+  bullet.style.bottom = "65px";
+
+  game.appendChild(bullet);
+
+  let bulletMove = setInterval(function() {
+    let bottom = parseInt(bullet.style.bottom);
+    bullet.style.bottom = (bottom + 10) + "px";
+
+    if (bottom > 600) {
+      clearInterval(bulletMove);
+      bullet.remove();
+    }
+
+    document.querySelectorAll(".enemy").forEach(function(enemy) {
+      let a = bullet.getBoundingClientRect();
+      let b = enemy.getBoundingClientRect();
+
+      if (
+        a.left < b.right &&
+        a.right > b.left &&
+        a.top < b.bottom &&
+        a.bottom > b.top
+      ) {
+        enemy.remove();
+        bullet.remove();
+        score++;
+        document.getElementById("score").textContent = score;
+        clearInterval(bulletMove);
+      }
+    });
+  }, 30);
+}
+
+function createEnemy() {
+  let enemy = document.createElement("div");
+  enemy.className = "enemy";
+  enemy.textContent = "👾";
+
+  enemy.style.left = Math.random() * 90 + "%";
+  enemy.style.top = "0px";
+
+  game.appendChild(enemy);
+
+  let enemyMove = setInterval(function() {
+    let top = parseInt(enemy.style.top);
+    enemy.style.top = (top + 3) + "px";
+
+    if (top > 600) {
+      clearInterval(enemyMove);
+      enemy.remove();
+    }
+  }, 40);
+}
+
+setInterval(createEnemy, 1000);
+</script>
+
+</body>
+</html>
